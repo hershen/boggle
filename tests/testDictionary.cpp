@@ -2,20 +2,42 @@
 
 #include "../boggle/dictionary.hpp"
 
-TEST(testDictionary, testgetWords) {
-	const std::vector<std::string> words{ "HEY", "BLUE", "STORM" };
-	Dictionary dictionary(words);
-	EXPECT_EQ(dictionary.getWords().size(), 3);
-	for (int i = 0; i < words.size(); ++i) {
-		EXPECT_EQ(dictionary.getWords()[i], words[i]);
+#include <algorithm>
+#include <sstream>
+
+class DictionaryTest : public ::testing::Test {
+protected:
+	std::vector<std::string> realWords{ "HEY", "BLUE", "STORM" };
+};
+
+TEST_F(DictionaryTest, constructorFilename) {
+	Dictionary dictionary("../../tests/testDictionary.txt");
+
+	for (const auto& word : realWords) {
+		EXPECT_TRUE(dictionary.isWord(word)) << word << " is supposed to be a real word, but isn't";
 	}
+	EXPECT_FALSE(dictionary.isWord("NOTWORD"));
 }
-TEST(testDictionary, testisRealWord) {
-	const std::vector<std::string> realWords{ "HEY", "BLUE", "STORM" };
+TEST_F(DictionaryTest, constructorIstream) {
+
+	std::stringstream stringstream;
+	std::for_each(realWords.begin(), realWords.end(), [&stringstream](const auto& word) {stringstream << word << "\n"; });
+	std::istream istream(stringstream.rdbuf());
+
+	Dictionary dictionary(istream);
+
+	for (const auto& word : realWords) {
+		EXPECT_TRUE(dictionary.isWord(word));
+	}
+	EXPECT_FALSE(dictionary.isWord("NOTWORD"));
+}
+TEST_F(DictionaryTest, isWord) {
 	Dictionary dictionary(realWords);
 
 	for (const auto& word : realWords) {
-		EXPECT_TRUE(dictionary.isRealWord(word));
+		EXPECT_TRUE(dictionary.isWord(word));
 	}
-	EXPECT_FALSE(dictionary.isRealWord("NOTWORD"));
+	EXPECT_FALSE(dictionary.isWord("NOTWORD"));
 }
+
+
