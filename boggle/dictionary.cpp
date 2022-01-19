@@ -29,7 +29,7 @@ std::vector<std::string> readWords(const std::string& filename) {
 		throw FileNotFound("Could not find file: " + filename);
 	}
 
-	return readWords(static_cast<std::istream&>(ifstream));
+	return readWords(ifstream);
 }
 
 Dictionary::Dictionary(const std::string& filename) : words_(readWords(filename)) {}
