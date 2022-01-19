@@ -14,7 +14,6 @@ int main() {
 	board.print();
 
 	Dictionary dictionary("dictionary.txt");
-	std::cout << "Dictionary has " << dictionary.getWords().size() << " words.\n";
 
 	/* Game game; */
 	/* game.play(input); */
