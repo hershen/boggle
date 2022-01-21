@@ -31,13 +31,4 @@ TEST_F(DictionaryTest, constructorIstream) {
 	}
 	EXPECT_FALSE(dictionary.isWord("NOTWORD"));
 }
-TEST_F(DictionaryTest, isWord) {
-	Dictionary dictionary(realWords);
-
-	for (const auto& word : realWords) {
-		EXPECT_TRUE(dictionary.isWord(word));
-	}
-	EXPECT_FALSE(dictionary.isWord("NOTWORD"));
-}
-
 

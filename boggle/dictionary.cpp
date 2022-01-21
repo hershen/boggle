@@ -36,8 +36,6 @@ Dictionary::Dictionary(const std::string& filename) : words_(readWords(filename)
 
 Dictionary::Dictionary(std::istream& istream) : words_(readWords(istream)) {}
 
-Dictionary::Dictionary(std::vector<std::string> words) : words_(words) {}
-
 bool Dictionary::isWord(const std::string& word) const {
 	return std::find(words_.begin(), words_.end(), word) != words_.end();
 }
