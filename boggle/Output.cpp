@@ -1,4 +1,4 @@
-#include "Output.hpp"
+#include "output.hpp"
 
 
 void Output::addWord(const std::string& word) {

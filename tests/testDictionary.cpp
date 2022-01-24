@@ -7,7 +7,7 @@
 
 class DictionaryTest : public ::testing::Test {
 protected:
-	std::vector<std::string> realWords{ "HEY", "BLUE", "STORM" };
+	std::vector<std::string> realWords{ "HEY", "BLUE", "STORM", "REALLYREALLYLONGWORD"};
 };
 
 TEST_F(DictionaryTest, constructorFilename) {
