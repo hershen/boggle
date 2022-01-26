@@ -9,7 +9,7 @@
 
 struct DictionaryTree {
 	std::array<DictionaryTree*, 26> children{nullptr};
-	char val = ' ';
+	char value = ' ';
 	bool isWord = false;
 };
 
@@ -23,6 +23,7 @@ public:
 
 	static const std::unordered_map<char, int> letter2index;
 
+	inline DictionaryTree* getTree() const { return dictionaryTree_; }
 private:
 	DictionaryTree* dictionaryTree_;
 	void addWord(const std::string& word);

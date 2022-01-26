@@ -74,6 +74,13 @@ public:
 		}
 	}
 
+	void setBoard(const std::string& string) {
+		if (string.size() != boardSideSize_ * boardSideSize_) {
+			std::cout << "Wrong string length\n";
+			return;
+		}
+		for (int i = 0; i < string.size(); ++i) { board_[i].value = string[i]; }
+	}
 
 	Letter& operator()(const int x, const int y) {
 		return board_[x * boardSideSize_ + y];
@@ -95,8 +102,8 @@ private:
 	static const std::string alphabet_;
 	static const std::size_t minBoardSideSize_;
 };
-const std::string Board::alphabet_ = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
-const std::size_t Board::minBoardSideSize_ = 3;
+const std::string Board::alphabet_{ "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
+const std::size_t Board::minBoardSideSize_{ 3 };
 
 
 class Game
@@ -104,45 +111,36 @@ class Game
 public:
 	Game(const Dictionary& dictionary) :dictionary_(dictionary) {}
 
-	void findWords(const Board& board) {
-
-		std::vector<std::string> validRestOfWords = dictionary_.getWords();
-
+	std::vector<std::string> findWords(Board& board) {
+		std::vector<std::string> validWords;
 		for (int row = 0; row < board.getSideSize(); ++row) {
 			for (int column = 0; column < board.getSideSize(); ++column) {
-				findWordsRecursive(board, row, column, "", validRestOfWords);
+				findWordsRecursive(&board(row, column), "", dictionary_.getTree(), validWords);
 			}
 		}
+		return validWords;
 	}
 
 private:
-	void findWordsRecursive(
-		const Board& board,
-		const int currentRow,
-		const int currentColumn,
-		std::string currentLetterSequence,
-		std::vector<std::string>& validRestOfWords) {
+	void findWordsRecursive(Letter* letter, std::string stub, const DictionaryTree* dictionaryTree, std::vector<std::string>& validWords) {
+		if (!letter or !letter->valid) { return; }
+		const auto childTree = dictionaryTree->children[Dictionary::letter2index.at(letter->value)];
+		if (!childTree) { return; }
 
-		std::vector<std::string> newValidRestOfWords;
 
-		for (const auto& word : validRestOfWords) {
-			if (word.size() == 0) {
-				words_.push_back(currentLetterSequence);
-			}
+		stub += letter->value;
 
-			else if (word[0] == board(currentRow, currentColumn)) {
-				newValidRestOfWords.push_back(word.substr(1, std::string::npos));
-			}
-		}
-
-		for (up, down, left, right, diagonals) {
-			findWordsRecursive(
-				board,
-				currentRow,
-				currentColumn,
-				currentLetterSequence + board(currentRow, currentColumn),
-				validRestOfWords);
-		}
+		letter->valid = false;
+		if (childTree->isWord) { validWords.push_back(stub); }
+		findWordsRecursive(letter->upperLeft, stub, childTree, validWords);
+		findWordsRecursive(letter->up, stub, childTree, validWords);
+		findWordsRecursive(letter->upperRight, stub, childTree, validWords);
+		findWordsRecursive(letter->right, stub, childTree, validWords);
+		findWordsRecursive(letter->lowerRight, stub, childTree, validWords);
+		findWordsRecursive(letter->down, stub, childTree, validWords);
+		findWordsRecursive(letter->lowerLeft, stub, childTree, validWords);
+		findWordsRecursive(letter->left, stub, childTree, validWords);
+		letter->valid = true;
 	}
 	std::vector<std::string> words_;
 	Dictionary dictionary_;
@@ -151,16 +149,24 @@ private:
 int main() {
 	std::srand(static_cast<unsigned int>(std::time(0)));
 
-	Board board(4);
+	Board board(3);
 	board.generateRandom();
+	board.setBoard("BOBAAAAAA");
 	board.print();
 
 	Dictionary dictionary("dictionary.txt");
 
+	const auto& dictWords = dictionary.getWords();
+	std::cout << "Dictionary has " << dictWords.size() << ". Words are: \n";
+	for (const auto& word : dictWords) {
+		std::cout << word << "\n";
+	};
 
 
-
-	//Game game(dictionary);
-	//game.findWords(board);
-	/* game.getFoundWords().print(); */
+	Game game(dictionary);
+	const auto foundWords = game.findWords(board);
+	std::cout << "\nfound words:\n";
+	for (const auto& word : foundWords) {
+		std::cout << word << std::endl;
+	}
 }

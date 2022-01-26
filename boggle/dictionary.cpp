@@ -50,7 +50,7 @@ void Dictionary::addWord(const std::string& word) {
 
 		if (!root->children[letter2index.at(letter)]) {
 			root->children[letter2index.at(letter)] = new DictionaryTree;
-			root->children[letter2index.at(letter)]->val = letter;
+			root->children[letter2index.at(letter)]->value = letter;
 		}
 
 		root = root->children[letter2index.at(letter)];
@@ -89,7 +89,7 @@ void getWordsRecursive(const DictionaryTree* tree, std::string stub, std::vector
 	}
 	for (const auto& letter : tree->children) {
 		if (letter) {
-			getWordsRecursive(letter, stub + letter->val, words);
+			getWordsRecursive(letter, stub + letter->value, words);
 		}
 	}
 }
